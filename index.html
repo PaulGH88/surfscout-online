@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>surfScout - Catch the wave before it becomes a market</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2306212e'/%3E%3Cpath d='M3 20 C9 20 11 9 16 9 C21 9 23 23 29 18' fill='none' stroke='%235fd0e6' stroke-width='2.6'/%3E%3C/svg%3E">
+<meta name="description" content="Market Surfing: a wave is a buyer population simultaneously discovering that an old operating model no longer works. surfScout scores it on 10 dimensions - Catch, Scout, or Park.">
+<style>
+  :root{
+    --deep:#06212e; --deep2:#0a2e3f; --mid:#0e3b50; --foam:#eaf6f8;
+    --ink:#dff0f3; --muted:#8fb6c2; --line:#1c4a5f;
+    --gold:#ffc94d; --catch:#39d98a; --scout:#ffc94d; --park:#ff7b6b;
+    --sweep:#5fd0e6;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    background:linear-gradient(180deg,var(--deep) 0%,var(--deep2) 40%,var(--mid) 100%);
+    color:var(--ink); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.55; -webkit-font-smoothing:antialiased; min-height:100vh;
+  }
+  .wrap{max-width:760px;margin:0 auto;padding:0 20px}
+  section{padding:54px 0;border-bottom:1px solid var(--line)}
+  section:last-child{border-bottom:none}
+  .eyebrow{text-transform:uppercase;letter-spacing:.22em;font-size:12px;color:var(--sweep);font-weight:700}
+  h1{font-size:clamp(30px,7vw,52px);line-height:1.06;margin:14px 0 16px;font-weight:800;letter-spacing:-.5px}
+  h2{font-size:clamp(22px,5vw,30px);margin:0 0 8px;font-weight:800;letter-spacing:-.3px}
+  .lede{font-size:clamp(17px,2.6vw,20px);color:var(--ink)}
+  .muted{color:var(--muted)}
+  .sub{font-size:17px;color:#bfe0e7;margin-top:10px;max-width:62ch}
+
+  /* hero sweep line */
+  .hero{position:relative;overflow:hidden}
+  .sweep{height:64px;margin:22px 0 26px;position:relative}
+  .sweep svg{width:100%;height:100%;display:block}
+  .sweep path{fill:none;stroke:var(--sweep);stroke-width:2.4;
+    filter:drop-shadow(0 0 6px rgba(95,208,230,.7));
+    stroke-dasharray:1400;stroke-dashoffset:1400;animation:draw 3.2s ease forwards infinite}
+  @keyframes draw{0%{stroke-dashoffset:1400}55%{stroke-dashoffset:0}100%{stroke-dashoffset:0;opacity:.85}}
+
+  .btn{display:inline-block;background:var(--gold);color:#0a2231;font-weight:800;
+    text-decoration:none;padding:14px 22px;border-radius:999px;font-size:16px;
+    box-shadow:0 6px 22px rgba(255,201,77,.28);transition:transform .12s ease}
+  .btn:active{transform:translateY(1px)}
+  .btn.ghost{background:transparent;color:var(--gold);border:1.5px solid var(--gold);box-shadow:none}
+
+  .doctrine ol{list-style:none;counter-reset:d;margin-top:18px}
+  .doctrine li{counter-increment:d;position:relative;padding:14px 0 14px 46px;border-top:1px solid var(--line);font-size:17px}
+  .doctrine li:before{content:counter(d);position:absolute;left:0;top:12px;width:30px;height:30px;
+    border-radius:50%;background:rgba(95,208,230,.12);border:1px solid var(--line);
+    color:var(--sweep);font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center}
+  .keeper{margin-top:20px;font-weight:800;font-size:19px;color:var(--gold)}
+
+  /* radar controls */
+  .dim{padding:16px 0;border-top:1px solid var(--line)}
+  .dim:first-of-type{border-top:none}
+  .dim .top{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+  .dim .name{font-weight:700;font-size:16px}
+  .dim .name b{color:var(--sweep);font-weight:800;margin-right:6px}
+  .dim .val{font-weight:800;color:var(--gold);font-variant-numeric:tabular-nums;min-width:1.4em;text-align:right}
+  .dim .help{font-size:13.5px;color:var(--muted);margin:4px 0 10px}
+  .dim input[type=range]{width:100%;-webkit-appearance:none;appearance:none;height:6px;border-radius:999px;
+    background:linear-gradient(90deg,var(--mid),var(--sweep));outline:none}
+  .dim input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:26px;height:26px;border-radius:50%;
+    background:var(--foam);border:3px solid var(--sweep);cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+  .dim input[type=range]::-moz-range-thumb{width:24px;height:24px;border-radius:50%;background:var(--foam);border:3px solid var(--sweep);cursor:pointer}
+  .ends{display:flex;justify-content:space-between;font-size:11.5px;color:var(--muted);margin-top:6px;text-transform:uppercase;letter-spacing:.04em}
+
+  /* live readout (sticky) */
+  .readout{position:sticky;top:0;z-index:5;background:rgba(6,33,46,.92);backdrop-filter:blur(8px);
+    border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin:0 0 18px;
+    display:flex;align-items:center;justify-content:space-between;gap:14px;box-shadow:0 8px 26px rgba(0,0,0,.3)}
+  .readout .score{font-size:30px;font-weight:800;font-variant-numeric:tabular-nums}
+  .readout .score small{font-size:15px;color:var(--muted);font-weight:600}
+  .chip{font-weight:800;padding:8px 16px;border-radius:999px;font-size:15px;letter-spacing:.02em;white-space:nowrap}
+  .chip.catch{background:rgba(57,217,138,.16);color:var(--catch);border:1.5px solid var(--catch)}
+  .chip.scout{background:rgba(255,201,77,.16);color:var(--scout);border:1.5px solid var(--scout)}
+  .chip.park{background:rgba(255,123,107,.16);color:var(--park);border:1.5px solid var(--park)}
+
+  /* charter */
+  .charter{margin-top:26px;border:1px solid var(--line);border-radius:16px;padding:22px;background:rgba(10,46,63,.5)}
+  .charter h3{font-size:13px;text-transform:uppercase;letter-spacing:.18em;color:var(--sweep);margin-bottom:6px}
+  .charter .verdictline{font-size:19px;font-weight:800;margin-bottom:4px}
+  .charter .rx{font-size:15.5px;color:#cfe7ec;margin-bottom:18px}
+  .triggers{list-style:none;display:grid;gap:10px}
+  .triggers li{display:flex;gap:10px;font-size:14.5px;align-items:flex-start}
+  .triggers .t{color:var(--gold);font-weight:800;white-space:nowrap;min-width:118px}
+  .rule{margin-top:18px;padding-top:16px;border-top:1px solid var(--line);font-size:14.5px;color:#cfe7ec}
+  .rule b{color:var(--foam)}
+
+  /* seeded cards */
+  .cards{display:grid;gap:10px;margin-top:18px}
+  .card{display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;
+    border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:rgba(10,46,63,.35);
+    color:inherit;text-align:left;font:inherit;transition:border-color .14s ease,transform .12s ease}
+  .card:hover{border-color:var(--sweep)}
+  .card:active{transform:translateY(1px)}
+  .card .label{font-weight:700;font-size:15px}
+  .card .meta{display:flex;align-items:center;gap:10px}
+  .card .n{font-weight:800;font-variant-numeric:tabular-nums;font-size:18px}
+  .card .v{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;padding:3px 9px;border-radius:999px}
+  .v.catch{color:var(--catch);background:rgba(57,217,138,.14)}
+  .v.scout{color:var(--scout);background:rgba(255,201,77,.14)}
+  .v.park{color:var(--park);background:rgba(255,123,107,.14)}
+
+  .close .keeper{font-size:18px}
+  .ctarow{margin-top:22px;display:flex;flex-wrap:wrap;gap:12px}
+  footer{padding:34px 0 50px;text-align:center;color:var(--muted);font-size:13.5px}
+  footer .sig{color:var(--ink);font-weight:600}
+  .hint{font-size:13px;color:var(--muted);margin-top:10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- A: HERO -->
+  <section class="hero" id="top">
+    <div class="eyebrow">Market Surfing</div>
+    <h1>Catch the wave before it becomes a market.</h1>
+    <div class="sweep" aria-hidden="true">
+      <svg viewBox="0 0 1400 64" preserveAspectRatio="none">
+        <path d="M0,40 C120,40 160,12 260,12 C360,12 380,52 480,52 C580,52 600,18 700,18 C800,18 820,46 920,46 C1020,46 1040,16 1140,16 C1240,16 1280,38 1400,30"/>
+      </svg>
+    </div>
+    <p class="sub">A wave is not a topic. A wave is a buyer population <b>simultaneously</b> discovering that an old operating model no longer works. surfScout scores it.</p>
+    <p style="margin-top:22px"><a class="btn" href="#radar">Score a wave</a></p>
+  </section>
+
+  <!-- B: DOCTRINE -->
+  <section class="doctrine">
+    <div class="eyebrow">The doctrine</div>
+    <h2>Five lines of Market Surfing</h2>
+    <ol>
+      <li>Problem sets move like waves - swell, rising face, crest, whitewash.</li>
+      <li>Catch the rising face: when pain is acute, budget is unlocking, and credible solutions are still scarce.</li>
+      <li>The hero is not the first observer. It is the first credible converter of emerging pain into paid proof.</li>
+      <li>Ride while you still have pricing power and you are still learning. Then paddle out before the crowd commoditizes it.</li>
+      <li>A wave compounds <b>boards</b> - methods, agents, tools, data, narratives - that make the next wave easier to spot, catch, and ride.</li>
+    </ol>
+    <p class="keeper">Let the wave go. Keep the board. Burn the anchors.</p>
+  </section>
+
+  <!-- C: RADAR -->
+  <section id="radar">
+    <div class="eyebrow">The Wave Radar</div>
+    <h2>Score your wave</h2>
+    <p class="muted" style="margin-bottom:8px">Ten dimensions, 1 to 5. Watch the verdict build as you go.</p>
+
+    <div class="readout">
+      <div class="score"><span id="total">30</span> <small>/ 50</small></div>
+      <div id="chip" class="chip scout">Scout</div>
+    </div>
+
+    <div id="dims"></div>
+  </section>
+
+  <!-- D: CHARTER -->
+  <section id="charter-section">
+    <div class="eyebrow">Your Wave Charter</div>
+    <h2>The discipline you set before the ride</h2>
+    <div class="charter">
+      <div class="verdictline" id="ch-verdict">This wave scores 30 / 50 - Scout.</div>
+      <div class="rx" id="ch-rx"></div>
+      <h3>Exit triggers - pre-commit these before you paddle in</h3>
+      <ul class="triggers">
+        <li><span class="t">Pricing-power</span><span>buyers compare primarily on price, not insight.</span></li>
+        <li><span class="t">Learning-rate</span><span>the work stops producing new reusable knowledge (busy but no longer teaching = whitewash).</span></li>
+        <li><span class="t">Crowd</span><span>credible competitors have packaged the same thing in plain language.</span></li>
+        <li><span class="t">Customization</span><span>each sale needs more custom work than the asset can absorb (the board is getting barnacles).</span></li>
+        <li><span class="t">Energy / next-wave</span><span>the next wave scores higher asymmetry than this one.</span></li>
+      </ul>
+      <div class="rule"><b>The rule:</b> Exit when 2 of 5 triggers are true - unless a named buyer is willing to fund the next reusable asset.</div>
+    </div>
+  </section>
+
+  <!-- E: WORKED EXAMPLES -->
+  <section>
+    <div class="eyebrow">Worked examples</div>
+    <h2>Five waves, already scored</h2>
+    <p class="muted">Tap one to load its real scores into the radar above.</p>
+    <div class="cards" id="cards"></div>
+    <p class="hint">Scores are real; the labels are kept generic.</p>
+  </section>
+
+  <!-- F: CLOSING -->
+  <section class="close">
+    <div class="eyebrow">Keep the board</div>
+    <h2>Sunk-cost poetry is where builders go to become ghosts.</h2>
+    <p class="sub">Market Surfing rewards perception and timing before it rewards scale execution. The catch creates the opening - execution decides whether you stand up or wipe out.</p>
+    <div class="ctarow">
+      <a class="btn" href="mailto:pszews@transforming.com?subject=Let's%20talk%20about%20a%20wave">Talk to me about a wave</a>
+      <a class="btn ghost" href="#radar">Score another wave</a>
+    </div>
+  </section>
+
+  <footer>
+    <div class="sig">By Paul Szews / Transforming Solutions</div>
+    <div>Market Surfing - an operating doctrine. surfscout.online</div>
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  // Dimensions: name, helper (what a 5 looks like), low-end, high-end
+  var DIMS = [
+    ["Pain velocity","Pain is accelerating across a buyer population, not flat.","Flat","Accelerating"],
+    ["Budget emergence","Money is moving or about to - a budget owner is newly visible.","No budget","Budget owner visible"],
+    ["Solution scarcity","Buyers have no obvious, trusted options yet.","Many options","No trusted options"],
+    ["Buyer-language instability","Buyers circle the same pain in different homemade words; no hardened category.","Hardened category","Messy homemade words"],
+    ["Forcing function","A deadline or event makes delay expensive - reg date, budget cycle, leadership change, sunset, audit.","No deadline","Hard forcing event"],
+    ["Capability fit","You can enter credibly with no heroic reinvention.","Heroic reinvention","Enter as you are"],
+    ["Thin-wedge feasibility","A narrow, paid, proof-generating first offer exists.","Boil the ocean","Narrow paid wedge"],
+    ["Reusable-asset yield","The work compounds into method, IP, data, tooling, agents, proof.","One-off","Compounds into a board"],
+    ["Open water (uncrowded)","No credible competitor has packaged this in plain language yet.","Crowded","Open water"],
+    ["Learning-rate potential","The ride keeps producing new reusable knowledge.","Stops teaching","Keeps teaching"]
+  ];
+
+  // Real doctrine vectors (10 dims, in order). Labels anonymized per Paul.
+  var EXAMPLES = [
+    ["Enterprise finance transformation",[4,5,4,3,4,5,5,5,3,4]],
+    ["Transformation GPS / digital-twin product",[4,3,5,5,3,3,4,5,4,4]],
+    ["Higher-ed research-admin concierge",[3,2,4,4,2,5,4,4,3,4]],
+    ["Faith-based senior-living advisory",[3,2,3,3,3,3,3,4,4,3]],
+    ["Creative side-project (vanity check)",[2,1,3,2,1,2,3,2,2,3]]
+  ];
+
+  var state = DIMS.map(function(){return 3;});
+  var dimsEl = document.getElementById('dims');
+
+  function band(score){
+    if(score >= 35) return "catch";
+    if(score >= 25) return "scout";
+    return "park";
+  }
+  function bandLabel(b){ return b==="catch"?"Catch":b==="scout"?"Scout":"Park"; }
+  function rx(b){
+    if(b==="catch") return "Enter with a narrow paid wedge. Keep the board, not the wave.";
+    if(b==="scout") return "Watch it. Hunt the forcing function - that single event is what tips a Scout into a Catch.";
+    return "Below the line. Ride it as joy if you must, but not as strategy.";
+  }
+
+  function render(){
+    var total = state.reduce(function(a,b){return a+b;},0);
+    var b = band(total);
+    document.getElementById('total').textContent = total;
+    var chip = document.getElementById('chip');
+    chip.className = "chip "+b;
+    chip.textContent = bandLabel(b);
+    document.getElementById('ch-verdict').textContent = "This wave scores "+total+" / 50 - "+bandLabel(b)+".";
+    document.getElementById('ch-rx').textContent = rx(b);
+  }
+
+  // build sliders
+  DIMS.forEach(function(d,i){
+    var wrap = document.createElement('div');
+    wrap.className = 'dim';
+    wrap.innerHTML =
+      '<div class="top"><div class="name"><b>'+(i+1)+'</b>'+d[0]+'</div><div class="val" id="v'+i+'">3</div></div>'+
+      '<div class="help">'+d[1]+'</div>'+
+      '<input type="range" min="1" max="5" step="1" value="3" id="r'+i+'" aria-label="'+d[0]+'">'+
+      '<div class="ends"><span>'+d[2]+'</span><span>'+d[3]+'</span></div>';
+    dimsEl.appendChild(wrap);
+    wrap.querySelector('#r'+i).addEventListener('input',function(e){
+      var val = parseInt(e.target.value,10);
+      state[i] = val;
+      document.getElementById('v'+i).textContent = val;
+      render();
+    });
+  });
+
+  // build cards
+  var cardsEl = document.getElementById('cards');
+  EXAMPLES.forEach(function(ex){
+    var total = ex[1].reduce(function(a,b){return a+b;},0);
+    var b = band(total);
+    var btn = document.createElement('button');
+    btn.className = 'card';
+    btn.innerHTML =
+      '<span class="label">'+ex[0]+'</span>'+
+      '<span class="meta"><span class="n">'+total+'</span><span class="v '+b+'">'+bandLabel(b)+'</span></span>';
+    btn.addEventListener('click',function(){
+      state = ex[1].slice();
+      state.forEach(function(val,i){
+        document.getElementById('r'+i).value = val;
+        document.getElementById('v'+i).textContent = val;
+      });
+      render();
+      document.getElementById('radar').scrollIntoView({behavior:'smooth'});
+    });
+    cardsEl.appendChild(btn);
+  });
+
+  render();
+})();
+</script>
+</body>
+</html>
