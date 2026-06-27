@@ -162,10 +162,11 @@
     <div class="charter">
       <div class="verdictline" id="ch-verdict">This wave scores 30 / 50 - Scout.</div>
       <div class="rx" id="ch-rx"></div>
+      <div class="rx" id="ch-hint" style="display:none;color:var(--gold)"></div>
       <h3>Exit triggers - pre-commit these before you paddle in</h3>
       <ul class="triggers">
         <li><span class="t">Pricing-power</span><span>buyers compare primarily on price, not insight.</span></li>
-        <li><span class="t">Learning-rate</span><span>the work stops producing new reusable knowledge (busy but no longer teaching = whitewash).</span></li>
+        <li><span class="t">Learning-rate</span><span>the work stops producing new reusable knowledge (busy but no longer teaching = whitewash), sustained across two review cycles.</span></li>
         <li><span class="t">Crowd</span><span>credible competitors have packaged the same thing in plain language.</span></li>
         <li><span class="t">Customization</span><span>each sale needs more custom work than the asset can absorb (the board is getting barnacles).</span></li>
         <li><span class="t">Energy / next-wave</span><span>the next wave scores higher asymmetry than this one.</span></li>
@@ -250,6 +251,15 @@
     chip.textContent = bandLabel(b);
     document.getElementById('ch-verdict').textContent = "This wave scores "+total+" / 50 - "+bandLabel(b)+".";
     document.getElementById('ch-rx').textContent = rx(b);
+    // Borderline Catch: doctrine's full Catch rule is >=35 WITH low crowding and high asset yield.
+    // state[8] = Open water (uncrowded), state[7] = Reusable-asset yield.
+    var hint = document.getElementById('ch-hint');
+    if(b === "catch" && total <= 37 && (state[8] <= 2 || state[7] <= 2)){
+      hint.textContent = "Borderline Catch - the full rule wants low crowding AND high asset yield. Confirm both before you paddle in.";
+      hint.style.display = "block";
+    } else {
+      hint.style.display = "none";
+    }
   }
 
   // build sliders
